@@ -21,6 +21,7 @@
         gameScene = null,
         body = [],
         food = null,
+        powerFood=null,
         //var wall = [],
         dir = 0,
         score = 0,
@@ -28,6 +29,7 @@
         posHighscore=10,
         iBody = new Image(),
         iFood = new Image(),
+        iPowerFood = new Image(),
         aEat = new Audio(),
         aDie = new Audio();
     window.requestAnimationFrame = (function () {
@@ -146,10 +148,12 @@
         // Load assets
         iBody.src = './images/body.png';
         iFood.src = './images/fruit.png';
+        iPowerFood.src='./images/fruit2.png';
         aEat.src = './images/chomp.m4a';
         aDie.src = './images/dies.m4a';
         // Create food
         food = new Rectangle(80, 80, 10, 10);
+        powerFood = new Rectangle(80,80,10,10);
         // Create walls
         //wall.push(new Rectangle(50, 50, 10, 10));
         //wall.push(new Rectangle(50, 100, 10, 10));
@@ -223,6 +227,8 @@
         body.push(new Rectangle(0, 0, 10, 10));
         food.x = random(canvas.width / 10 - 1) * 10;
         food.y = random(canvas.height / 10 - 1) * 10;
+        powerFood.x=random(canvas.width/10 - 1)*10;
+        powerFood.y=random(canvas.height/10 - 1)*10;
         gameover = false;
     };
     gameScene.paint = function (ctx) {
@@ -244,6 +250,8 @@
         // Draw food
         ctx.strokeStyle = '#f00';
         food.drawImage(ctx, iFood);
+        // Draw powerFood
+        powerFood.drawImage(ctx, iPowerFood);
         // Draw score
         ctx.fillStyle = '#fff';
         ctx.textAlign = 'left';
@@ -318,6 +326,13 @@
                 score += 1;
                 food.x = random(canvas.width / 10 - 1) * 10;
                 food.y = random(canvas.height / 10 - 1) * 10;
+                aEat.play();
+            }
+            if (body[0].intersects(powerFood)) {
+                body.push(new Rectangle(0, 0, 10, 10));
+                score += 5;
+                powerFood.x = random(canvas.width / 10 - 1) * 10;
+                powerFood.y = random(canvas.height / 10 - 1) * 10;
                 aEat.play();
             }
             // Wall Intersects
