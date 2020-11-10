@@ -25,7 +25,7 @@
         dir = 0,
         score = 0,
         highscores=[],
-        posHighscore=10;
+        posHighscore=10,
         iBody = new Image(),
         iFood = new Image(),
         aEat = new Audio(),
@@ -90,6 +90,17 @@
             }
         }
     };
+    function addHighscore(score){
+        posHighscore=0;
+        while(highscores[posHighscore]>score && posHighscore<highscores.length){
+            posHighscore+=1;
+        }
+        highscores.splice(posHighscore,0,score);
+        if(highscores.length>10){
+            highscores.length=10;
+        }
+        localStorage.highscores=highscores.join(',');
+    }
     function Scene() {
         this.id = scenes.length;
         scenes.push(this);
@@ -144,14 +155,44 @@
         //wall.push(new Rectangle(50, 100, 10, 10));
         //wall.push(new Rectangle(100, 50, 10, 10));
         //wall.push(new Rectangle(100, 100, 10, 10));
-        //Load Level
-        if (localStorage.level) {
-            level = localStorage.level;
-            }
+        //Load highScores
+        if(localStorage.highscores){
+            highscores=localStorage.highscores.split(',');
+        }
+
         // Start game
         run();
         repaint();
     }
+    //Highscore Scene
+    var highscoresScene=new Scene();
+    highscoresScene.paint=function(ctx){
+        var i=0,
+            l=0;
+        //clean
+        ctx.fillStyle='#030';
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+        //draw
+        ctx.fillStyle="#fff";
+        ctx.textAlign="center";
+        ctx.fillText('HIGH SCORES', 150,30);
+        // Draw high scores
+        ctx.textAlign = 'right';
+        for(i = 0, l = highscores.length; i < l; i += 1) {
+            if(i === posHighscore) {
+                ctx.fillText('*' + highscores[i], 180, 40 + i * 10);
+            } else{
+                ctx.fillText(highscores[i], 180, 40 + i * 10);
+            }
+        }
+    }
+    highscoresScene.act = function () {
+        // Load next scene
+        if (lastPress === KEY_ENTER) {
+            loadScene(gameScene);
+            lastPress = null;
+        }
+    };
     // Main Scene
     mainScene = new Scene();
     mainScene.paint = function (ctx) {
@@ -297,6 +338,8 @@
                     gameover = true;
                     pause = true;
                     aDie.play();
+                    addHighscore(score);
+                    loadScene(highscoresScene);
                 }
             }
         }
