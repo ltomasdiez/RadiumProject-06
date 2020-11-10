@@ -31,6 +31,8 @@
         iFood = new Image(),
         iPowerFood = new Image(),
         aEat = new Audio(),
+        aEat2 = new Audio(),
+        aPause=new Audio(),
         aDie = new Audio();
     window.requestAnimationFrame = (function () {
         return window.requestAnimationFrame ||
@@ -131,7 +133,7 @@
         }
     }
     function run() {
-        setTimeout(run, 50);
+        setTimeout(run, 70);
         if (scenes.length) {
             scenes[currentScene].act();
         }
@@ -149,8 +151,10 @@
         iBody.src = './images/body.png';
         iFood.src = './images/fruit.png';
         iPowerFood.src='./images/fruit2.png';
-        aEat.src = './images/chomp.m4a';
-        aDie.src = './images/dies.m4a';
+        aEat.src = './images/chomp.oga';
+        aEat2.src ='./images/fruit2.mp3';
+        aPause.src='./images/start.mp3';
+        aDie.src = './images/dies.oga';
         // Create food
         food = new Rectangle(80, 80, 10, 10);
         powerFood = new Rectangle(80,80,10,10);
@@ -329,11 +333,17 @@
                 aEat.play();
             }
             if (body[0].intersects(powerFood)) {
-                body.push(new Rectangle(0, 0, 10, 10));
                 score += 5;
+                fetch('https://jsonplaceholder.typicode.com/?score='+score)
+                .then(function(response){
+                    return console.log("Score sent successfully")
+                })
+                .catch(function(error){
+                    return console.log("Error trying to send the score");
+                });
                 powerFood.x = random(canvas.width / 10 - 1) * 10;
                 powerFood.y = random(canvas.height / 10 - 1) * 10;
-                aEat.play();
+                aEat2.play();
             }
             // Wall Intersects
             //for (i = 0, l = wall.length; i < l; i += 1) {
@@ -362,6 +372,7 @@
         if (lastPress === KEY_ENTER) {
             pause = !pause;
             lastPress = null;
+            aPause.play();
         }
     }
     window.addEventListener('load', init, false);
